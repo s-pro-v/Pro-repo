@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pl" theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIT_SCANNER // S-PRO-V // GRID_LAYOUT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <!-- Monaco Editor Loader - ładowany dynamicznie, require.config po onload -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/s-pro-v/root_web@refs/heads/main/root.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+    <!-- SYSTEM BOOT -->
+    <div id="splash-screen">
+        <div class="splash-bg-wrap">
+            <div class="splash-container-svg" aria-hidden="false">
+                <div class="splash-container-inner">
+                    <img src="https://raw.githubusercontent.com/s-pro-v/img/d15bc10f8bedd0dfedecf4b3b1e0ea0f83abb8ff/container01.svg"
+                        alt="" width="2348" height="1468">
+                </div>
+            </div>
+        </div>
+        <div class="splash-brand">GIT_SCANNER::<span>S-PRO-V</span></div>
+        <div class="boot-panel">
+            <ul class="boot-status-list" id="boot-status-list"></ul>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        <div class="boot-log" id="boot-log"></div>
+        <div class="splash-continue" id="splash-continue">
+            <p class="splash-continue-text">System ready. Enter password to continue.</p>
+            <p class="splash-logout-info" id="splash-logout-info" aria-live="polite"></p>
+            <p class="splash-auth-info" id="splash-auth-info"></p>
+            <div class="splash-password-wrap">
+                <label for="splash-password" class="splash-password-label">Password</label>
+                <input type="password" id="splash-password" class="splash-password-input" placeholder="••••••••"
+                    autocomplete="off">
+                <p class="splash-password-error" id="splash-password-error" aria-live="polite"></p>
+            </div>
+            <button type="button" class="btn splash-continue-btn" id="splash-continue-btn"><i
+                    class="fas fa-lock-open btn-icon" aria-hidden="true"></i> UNLOCK</button>
+        </div>
+    </div>
+
+    <div class="app-content" id="app-content">
+        <header class="site-header">
+            <div class="header-brand">GIT_SCANNER::<span>S-PRO-V</span></div>
+            <div class="header-nav">
+                <button class="btn view-toggle" id="view-toggle"><i class="fas fa-list btn-icon" aria-hidden="true"></i>
+                    VIEW: LIST</button>
+                <button class="btn key-toggle" id="key-toggle"><i class="fas fa-key btn-icon" aria-hidden="true"></i>
+                    AUTH_KEY</button>
+                <button class="btn theme-toggle" id="theme-toggle"><i class="fas fa-circle-half-stroke btn-icon"
+                        aria-hidden="true"></i> THEME</button>
+
+                <span id="auth-status" class="badge auth-status"><i class="far fa-circle btn-icon"
+                        aria-hidden="true"></i>
+                    AUTH: NO</span>
+                <button class="btn btn-logout" id="btn-logout" title="Wyloguj – ponowne hasło przy wejściu"><i
+                        class="fas fa-right-from-bracket btn-icon" aria-hidden="true"></i> LOGOUT</button>
+            </div>
+        </header>
+
+        <div class="auth-modal" id="auth-panel" role="dialog" aria-labelledby="auth-modal-title" aria-modal="true"
+            aria-hidden="true">
+            <div class="auth-modal-backdrop" id="auth-modal-backdrop"></div>
+            <div class="auth-modal-box">
+                <div class="auth-modal-header">
+                    <h2 id="auth-modal-title"><i class="fas fa-key btn-icon" aria-hidden="true"></i> GitHub PAT</h2>
+                    <button type="button" class="auth-modal-close" id="auth-modal-close" aria-label="Zamknij modal"><i
+                            class="fas fa-times" aria-hidden="true"></i></button>
+                </div>
+                <div class="auth-modal-body">
+                    <label for="gh-token">Token (Personal Access Token)</label>
+                    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off"
+                        aria-describedby="auth-token-hint">
+                    <p class="auth-modal-hint" id="auth-token-hint">Ustaw token, aby zwiększyć limit API (60 → 5000
+                        req/h). Token zapisujemy lokalnie w przeglądarce.</p>
+                    <div class="auth-modal-actions">
+                        <button type="button" class="btn apply-token" id="apply-token"><i class="fas fa-plug btn-icon"
+                                aria-hidden="true"></i> CONNECT</button>
+                        <button type="button" class="btn clear-token" id="clear-token"><i
+                                class="fas fa-right-from-bracket btn-icon" aria-hidden="true"></i> DISCONNECT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-main">
+            <section class="dashboard-grid">
+                <div class="card card--repos card--filter card--filter-active" id="card-filter-all" data-filter="all"
+                    role="button" tabindex="0" title="Pokaż wszystkie repozytoria"><span class="card-label"><i
+                            class="fas fa-folder card-icon" aria-hidden="true"></i> Total Repos</span><span
+                        class="card-heading" id="stat-total">0</span></div>
+                <div class="card card--active card--filter" id="card-filter-active" data-filter="active" role="button"
+                    tabindex="0" title="Tylko aktywne (push &lt; 180 dni)"><span class="card-label"><i
+                            class="fas fa-circle-check card-icon" aria-hidden="true"></i> Active State</span><span
+                        class="card-heading" id="stat-active" style="color:var(--success-color)">0</span></div>
+                <div class="card card--pages card--filter" id="card-filter-pages" data-filter="pages" role="button"
+                    tabindex="0" title="Tylko z GitHub Pages"><span class="card-label"><i class="fas fa-globe card-icon"
+                            aria-hidden="true"></i> Pages Live</span><span class="card-heading" id="stat-pages"
+                        style="color:var(--info-color)">0</span></div>
+                <div class="card card--rate"><span class="card-label"><i class="fas fa-gauge-high card-icon"
+                            aria-hidden="true"></i> Rate Limit</span><span class="card-heading"
+                        id="rate-limit">0/0</span>
+                </div>
+            </section>
+            <div class="bg-line"> </div>
+            <main class="repo-list-container" id="repo-list"></main>
+        </div>
+
+        <!-- MONACO MODAL -->
+        <div class="monaco-overlay" id="code-browser">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-row">
+                        <div class="modal-header-title">
+                            <i class="fas fa-folder-open btn-icon icon-highlight" aria-hidden="true"></i>
+                            <span>EXPLORER -</span>
+                            <span class="file-path" id="current-repo-name">---</span>
+                        </div>
+                        <div class="cdn-bar">
+                            <input type="text" id="cdn-url" class="cdn-url" readonly
+                                placeholder="CDN: https://cdn.jsdelivr.net/gh/...">
+
+                        </div>
+                        <button class="btn btn-copy" id="cdn-copy" title="Kopiuj URL"><i class="fas fa-copy btn-icon"
+                                aria-hidden="true"></i>
+                            COPY</button>
+                        <button class="btn close-browser" onclick="closeBrowser()"><i class="fas fa-xmark btn-icon"
+                                aria-hidden="true"></i> CLOSE [ESC]</button>
+                    </div>
+                </div>
+                <div class="editor-layout">
+                    <div class="file-explorer" id="file-tree"></div>
+                    <div style="position: relative; flex: 1;">
+                        <div id="monaco-container">
+                            <div class="monaco-loading" id="monaco-loading"><i class="fas fa-spinner fa-spin"
+                                    aria-hidden="true"></i> Ładowanie edytora...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            SESSION: <span id="session-id">---</span> // LAYOUT_ENGINE: GRID_LIST_AUTO // V2.7
+        </footer>
+    </div>
+
+    <script src="index.js">
+      
+    </script>
+</body>
+
+</html>
