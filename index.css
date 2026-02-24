@@ -893,7 +893,7 @@
 
         .repo-list-container.grid-mode .agenda-row .action-col {
             border-left: none;
-            padding: 0.3rem;
+            padding: 0.15rem;
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -1019,11 +1019,11 @@
         }
 
         .agenda-row .action-col {
-            padding: 0.3rem 0.3rem;
+            padding: 0.15rem;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 0.35rem;
+            gap: 0.15rem;
             background: var(--bg-tertiary);
             margin: 6px;
             align-items: stretch;
